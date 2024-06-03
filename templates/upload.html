@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload DOC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #2d2d2d;
+            border: 2px solid gray;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 100%;
+            width: 400px;
+        }
+        h1 {
+            color: #343a40;
+        }
+        label, input, button {
+            font-size: 16px;
+        }
+        #tagInput {
+            padding: 10px;
+            width: calc(100% - 90px);
+            margin-right: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #129430;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3cda5e;
+        }
+        .tagsContainer {
+            margin-top: 10px;
+            text-align: left;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 14px;
+            color: #495057;
+        }
+        .tag .close {
+            cursor: pointer;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-input-label {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color:#129430;
+            color: #ffffff;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .file-input-label:hover {
+            background-color: #3cda5e;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #495057;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #129430;
+            color: #ffffff;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        input[type="submit"]:hover {
+            background-color: #3cda5e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="color: #ced4da;">Verify the Document</h1>
+        <form id="uploadForm" action="/uploader" method="post" enctype="multipart/form-data">
+            <h3 for="tagInput" style="color: #ced4da;">Tags</h3>
+            <input type="text" id="tagInput">
+            <button type="button" onclick="addTag()">Add Tag</button>
+            <div id="tagsContainer" class="tagsContainer"></div>
+            <input type="hidden" name="tags" id="tags">
+            <label class="file-input-label" for="fileInput">Choose file</label>
+            <input type="file" id="fileInput" class="file-input" name="file" required>
+            <div id="fileName" class="file-name" style="color: #ced4da;">No file chosen</div>
+            <input type="submit" value="Check">
+        </form>
+    </div>
+    <script>
+        let tagsList = [];
+
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+        function addTag() {
+            const tagInput = document.getElementById('tagInput');
+            const tagValue = tagInput.value.trim();
+            if (tagValue && !tagsList.includes(tagValue)) {
+                tagsList.push(tagValue);
+                updateTagsDisplay();
+            }
+            tagInput.value = '';
+            updateHiddenInput();
+        }
+
+        function removeTag(tag) {
+            tagsList = tagsList.filter(t => t !== tag);
+            updateTagsDisplay();
+            updateHiddenInput();
+        }
+
+        function updateTagsDisplay() {
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            tagsList.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `${tag} <span class="close" onclick="removeTag('${tag}')">&times;</span>`;
+                tagsContainer.appendChild(tagElement);
+            });
+        }
+
+        function updateHiddenInput() {
+            const tagsInput = document.getElementById('tags');
+            tagsInput.value = tagsList.join(',');
+        }
+    </script>
+</body>
+</html>
